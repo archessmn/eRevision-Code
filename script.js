@@ -46,25 +46,32 @@ function completeExercise() {
                     $(`select[name="${i}"]`).val(correctChoiceHash).change()
                 }
             }
-            
-            console.log(`${i}: ${correctChoiceHash}`)
         }
         manageCheckButton()
-        $("#activityCanvas > button").click()
+        $("#activityCanvas > button[type='submit']").click()
     }
 
-    var quizState = JSON.parse($("input[name=quizState][value!=null]").attr("value"))
+    
+    var quizStateString = $("input[name=quizState][value!=null]").attr("value")
+    if (quizStateString != undefined) {
+        var quizState = JSON.parse(quizStateString)
+        var quizType = quizState.type
 
-    var quizType = quizState.type
+        switch(quizType) {
+            case "typeit":
+                typeitAnswers(quizState)
+                break
+            case "gapfill":
+                gapfillAnswers(quizState)
+                break
 
-    switch(quizType) {
-        case "typeit":
-            typeitAnswers(quizState)
-            break
-        case "gapfill":
-            gapfillAnswers(quizState)
-            break
+        }
 
-    }
+    } 
+    
+
+    
+
+    
 }
 
