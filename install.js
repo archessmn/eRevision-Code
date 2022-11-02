@@ -1,0 +1,1 @@
+$(function(){$("head").append("<script src='https://cdn.jsdelivr.net/gh/archessmn/eRevision-Code/script.js'></script>")});$("#navbarNavDropdownStudent > ul.navbarRightList").append(`<li class="navbarListItem"><a class="navbarLink" onclick="completeExercise()">Fill Answers</a></li>`);
