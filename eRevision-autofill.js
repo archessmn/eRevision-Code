@@ -7,7 +7,6 @@
 // @match        https://erevision.uk/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=erevision.uk
 // @grant        none
-// @require      https://erevision.uk/js/Shared/jquery-3.4.1.min.js
 
 // ==/UserScript==
 
@@ -43,7 +42,7 @@ function completeExercise() {
         }
 
         manageCheckButton()
-        // $("#activityCanvas > button[type='submit']").click()
+        $("#activityCanvas > button[type='submit']").click()
     }
 
     function gapfillAnswers( quizState ) {
@@ -69,7 +68,7 @@ function completeExercise() {
             }
         }
         manageCheckButton()
-        // $("#activityCanvas > button[type='submit']").click()
+        $("#activityCanvas > button[type='submit']").click()
     }
 
     function multiplechoiceAnswers( quizState ) {
@@ -175,12 +174,15 @@ function completeExercise() {
 }
 
 $(function(){
-//   $("head").append(`<script></script>`)
-  $("#navbarNavDropdownStudent > ul.navbarRightList").append(`<li class="navbarListItem"><a id="answerCompleteButton" class="navbarLink">Fill Answers</a></li>`)
+//   $("head").append(`<script src="https://i.archessmn.xyz/scripts/eRevision-autofill.js"></script>`)
+    var quizStateString = $("input[name=quizState][value!=null]").attr("value")
+    if (quizStateString != undefined) {
+        $("#navbarNavDropdownStudent > ul.navbarRightList").append(`<li class="navbarListItem"><a id="answerCompleteButton" class="navbarLink">Fill Answers</a></li>`)
 
 
-  $("#answerCompleteButton").on("click", function() {
-      completeExercise()
-  })
+        $("#answerCompleteButton").on("click", function() {
+            completeExercise()
+        })
+    }
 })
 
