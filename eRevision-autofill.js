@@ -166,7 +166,7 @@ function completeExercise() {
                 multiplechoiceAnswers(quizState)
                 break
             default:
-                window.alert("This task isn't supported")
+                window.alert("This task doesn't yet support filling answers, you can create an issue at https://github.com/archessmn/eRevision-Code/issues")
         } 
 
     }
