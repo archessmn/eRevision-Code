@@ -16,7 +16,6 @@
 
 
 function completeExercise() {
-    const fileURL = "https://cdn.jsdelivr.net/gh/archessmn/eRevision-Code/script.js"
 
     function ObjectLength( object ) {
         var length = 0;
@@ -151,7 +150,6 @@ function completeExercise() {
 
     }
 
-
     var quizStateString = $("input[name=quizState][value!=null]").attr("value")
     if (quizStateString != undefined) {
         var quizState = JSON.parse(quizStateString)
@@ -167,7 +165,8 @@ function completeExercise() {
             case "multiplechoice":
                 multiplechoiceAnswers(quizState)
                 break
-
+            default:
+                window.alert("This task isn't supported")
         } 
 
     }
