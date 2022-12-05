@@ -14,10 +14,6 @@
 // ==/UserScript==
 
 
-
-
-
-
 function completeExercise() {
 
     function ObjectLength( object ) {
@@ -45,18 +41,21 @@ function completeExercise() {
         });
     }
 
+    function setTimeoutForCheckButton() {
+        setTimeout(function(){
+            manageCheckButton();
+            $("#activityCanvas > button[type='submit']").click()
+        }, 1000);
+    }
+
 
     function typeitAnswers( quizState ) {
         var allQuestionAnswers = quizState.quizData.questionData[0].answers
 
         var numQuestions = ObjectLength(allQuestionAnswers)
 
-        var i
-
-        for (i=1; i <= numQuestions; i++) {
-            var questionAnswer = allQuestionAnswers[i][0]
-
-            $(`#typeItAnswer${i}`).val(questionAnswer.answer).change()
+        for (var i = 1; i <= numQuestions; i++) {
+            $(`#typeItAnswer${i}`).val(allQuestionAnswers[i][0].answer).change()
         }
 
         manageCheckButton()
@@ -68,23 +67,19 @@ function completeExercise() {
 
         var numQuestions = ObjectLength(allQuestionAnswers)
 
-        var i
-
-        for (i=1; i <= numQuestions; i++) {
+        for (var i = 1; i <= numQuestions; i++) {
             var questionAnswers = allQuestionAnswers[i]
 
             var numQuestionChoices = ObjectLength(questionAnswers)
 
-            var correctChoiceHash = ""
-            var o
-
-            for (o=0; o <= numQuestionChoices - 1; o++) {
+            for (var o = 0; o <= numQuestionChoices - 1; o++) {
                 if (questionAnswers[o].type == "correct") {
-                    correctChoiceHash = questionAnswers[o].hashedID
-                    $(`select[name="${i}"]`).val(correctChoiceHash).change()
+                    $(`select[name="${i}"]`).val(questionAnswers[o].hashedID).change()
+                    break
                 }
             }
         }
+
         manageCheckButton()
         $("#activityCanvas > button[type='submit']").click()
     }
@@ -96,9 +91,10 @@ function completeExercise() {
             var allCurrentQuestionAnswers = quizState.quizData.questionData.answers
             var numQuestionAnswers = ObjectLength(allCurrentQuestionAnswers)
 
-            for (o=0; o <= numQuestionAnswers - 1; o++) {
+            for (var o=0; o <= numQuestionAnswers - 1; o++) {
                 if (allCurrentQuestionAnswers[o].type == "correct") {
                     correctChoiceHash = allCurrentQuestionAnswers[o].hashedID
+                    break
                 }
             }
 
@@ -120,10 +116,8 @@ function completeExercise() {
         var numQuestionsLeft = ObjectLength(quizState.unansweredQuestionIDs)
 
         if (numQuestionsLeft > 0) {
-            // Select the target node.
             var target = document.querySelector('#ajaxCanvas')
 
-            // Create an observer instance.
             var observer = new MutationObserver(function(mutations) {
                 // If next question button exists
                 if ($(`button[name='moveToTheNextQuestion']`).length) {
@@ -155,20 +149,17 @@ function completeExercise() {
             selectAnswer()
 
         }
-        // selectAnswer()
-        
-        // nextQuestion()
     }
 
     function categoriseAnswers(quizState) {
         var allQuestionAnswers = quizState.quizData.questionData
 
-        for (o=0; o < ObjectLength(allQuestionAnswers.answers); o++) {
+        for (var o = 0; o < ObjectLength(allQuestionAnswers.answers); o++) {
 
             answer = allQuestionAnswers.answers[o]
             correctCategory = {}
 
-            for (i = 0; i < ObjectLength(allQuestionAnswers.categories); i++) {
+            for (var i = 0; i < ObjectLength(allQuestionAnswers.categories); i++) {
                 if (allQuestionAnswers.categories[i].ID == answer.categoryID) {
                     correctCategory = allQuestionAnswers.categories[i]
                     break
@@ -180,10 +171,7 @@ function completeExercise() {
             $(`#${answer.hashedID}`).appendTo($(`#${correctCategory.hashedID}`))
         }
 
-        setTimeout(function(){
-            manageCheckButton();
-            $("#activityCanvas > button[type='submit']").click()
-        }, 1000);
+        setTimeoutForCheckButton()
 
     }
 
@@ -193,7 +181,7 @@ function completeExercise() {
 
         var allQuestionAnswers = quizState.quizData.questionData
 
-        for (o=0; o < ObjectLength(allQuestionAnswers); o++) {
+        for (var o = 0; o < ObjectLength(allQuestionAnswers); o++) {
 
             answerID = allQuestionAnswers[o].hashedID
             questionID = allQuestionAnswers[o].ID
@@ -204,16 +192,13 @@ function completeExercise() {
             $(`#${answerID}`).appendTo($(`#${questionID}`))
         }
 
-        setTimeout(function(){
-            manageCheckButton();
-            $("#activityCanvas > button[type='submit']").click()
-        }, 1000);
+        setTimeoutForCheckButton()
     }
 
     function pindropAnswers(quizState) {
         var allQuestionAnswers = quizState.quizData.questionData.labels
 
-        for (o=0; o < ObjectLength(allQuestionAnswers); o++) {
+        for (var o = 0; o < ObjectLength(allQuestionAnswers); o++) {
 
             answerID = allQuestionAnswers[o].hashedID
             questionID = allQuestionAnswers[o].ID
@@ -224,10 +209,7 @@ function completeExercise() {
             $(`#${answerID}`).appendTo($(`#${questionID}`))
         }
 
-        setTimeout(function(){
-            manageCheckButton();
-            $("#activityCanvas > button[type='submit']").click()
-        }, 1000);
+        setTimeoutForCheckButton()
     }
 
     var quizStateString = $("input[name=quizState][value!=null]").attr("value")
