@@ -7,6 +7,9 @@
 // @match        https://erevision.uk/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=erevision.uk
 // @grant        none
+//      https://raw.githubusercontent.com/threedubmedia/jquery.threedubmedia/master/event.drag/jquery.event.drag.js
+//      https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js
+//      https://rawgit.com/jquery/jquery-ui/1-11-stable/external/jquery-simulate/jquery.simulate.js
 
 // ==/UserScript==
 
@@ -26,6 +29,22 @@ function completeExercise() {
         }
         return length;
     };
+
+    function dragAtoB(A, B) {
+        var draggable = $(A).draggable(),
+            droppable = $(B).droppable(),
+
+            droppableOffset = droppable.offset(),
+            draggableOffset = draggable.offset(),
+            dx = droppableOffset.left - draggableOffset.left,
+            dy = droppableOffset.top - draggableOffset.top;
+    
+        draggable.simulate("drag", {
+            dx: dx + 20,
+            dy: dy + 20
+        });
+    }
+
 
     function typeitAnswers( quizState ) {
         var allQuestionAnswers = quizState.quizData.questionData[0].answers
@@ -136,24 +155,87 @@ function completeExercise() {
             selectAnswer()
 
         }
-        
-        
-
-
         // selectAnswer()
         
         // nextQuestion()
+    }
 
-        
+    function categoriseAnswers(quizState) {
+        var allQuestionAnswers = quizState.quizData.questionData
 
-        
+        for (o=0; o < ObjectLength(allQuestionAnswers.answers); o++) {
 
+            answer = allQuestionAnswers.answers[o]
+            correctCategory = {}
+
+            for (i = 0; i < ObjectLength(allQuestionAnswers.categories); i++) {
+                if (allQuestionAnswers.categories[i].ID == answer.categoryID) {
+                    correctCategory = allQuestionAnswers.categories[i]
+                    break
+                }
+            }
+
+            dragAtoB(`#${answer.hashedID}`, `#${correctCategory.hashedID}`)
+
+            $(`#${answer.hashedID}`).appendTo($(`#${correctCategory.hashedID}`))
+        }
+
+        setTimeout(function(){
+            manageCheckButton();
+            $("#activityCanvas > button[type='submit']").click()
+        }, 1000);
+
+    }
+
+    function matchUpAnswers(quizState) {
+
+        console.log("Solving Match Up")
+
+        var allQuestionAnswers = quizState.quizData.questionData
+
+        for (o=0; o < ObjectLength(allQuestionAnswers); o++) {
+
+            answerID = allQuestionAnswers[o].hashedID
+            questionID = allQuestionAnswers[o].ID
+
+            dragAtoB(`#${answerID}`, `#${questionID}`)
+
+            $(`#matchupQuestions #${answerID}`).remove()
+            $(`#${answerID}`).appendTo($(`#${questionID}`))
+        }
+
+        setTimeout(function(){
+            manageCheckButton();
+            $("#activityCanvas > button[type='submit']").click()
+        }, 1000);
+    }
+
+    function pindropAnswers(quizState) {
+        var allQuestionAnswers = quizState.quizData.questionData.labels
+
+        for (o=0; o < ObjectLength(allQuestionAnswers); o++) {
+
+            answerID = allQuestionAnswers[o].hashedID
+            questionID = allQuestionAnswers[o].ID
+
+            dragAtoB(`#${answerID}`, `#${questionID}`)
+
+            $(`#matchupQuestions #${answerID}`).remove()
+            $(`#${answerID}`).appendTo($(`#${questionID}`))
+        }
+
+        setTimeout(function(){
+            manageCheckButton();
+            $("#activityCanvas > button[type='submit']").click()
+        }, 1000);
     }
 
     var quizStateString = $("input[name=quizState][value!=null]").attr("value")
     if (quizStateString != undefined) {
         var quizState = JSON.parse(quizStateString)
         var quizType = quizState.type
+
+        console.log(quizType)
 
         switch(quizType) {
             case "typeit":
@@ -164,6 +246,15 @@ function completeExercise() {
                 break
             case "multiplechoice":
                 multiplechoiceAnswers(quizState)
+                break
+            case "categorise":
+                categoriseAnswers(quizState)
+                break
+            case "matchup":
+                matchUpAnswers(quizState)
+                break
+            case "pindrop":
+                pindropAnswers(quizState)
                 break
             default:
                 window.alert("This task doesn't yet support filling answers, you can create an issue at https://github.com/archessmn/eRevision-Code/issues")
@@ -178,10 +269,75 @@ $(function(){
     if (quizStateString != undefined) {
         $("#navbarNavDropdownStudent > ul.navbarRightList").append(`<li class="navbarListItem"><a id="answerCompleteButton" class="navbarLink">Fill Answers</a></li>`)
 
+        $("head").append(`<script src="https://raw.githubusercontent.com/threedubmedia/jquery.threedubmedia/master/event.drag/jquery.event.drag.js"></script>`)
+        $("head").append(`<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>`)
+        $("head").append(`<script src="https://rawgit.com/jquery/jquery-ui/1-11-stable/external/jquery-simulate/jquery.simulate.js"></script>`)
+
+        
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js
+// @require      https://rawgit.com/jquery/jquery-ui/1-11-stable/external/jquery-simulate/jquery.simulate.js
 
         $("#answerCompleteButton").on("click", function() {
             completeExercise()
         })
+
+        var quizState = JSON.parse(quizStateString)
+        var quizType = quizState.type
+
+        // if (quizType == "pindrop") {
+        //     $(".pindropLabel").on("click", function(e) {
+
+        //         function ObjectLength( object ) {
+        //             var length = 0;
+        //             for( var key in object ) {
+        //                 if( object.hasOwnProperty(key) ) {
+        //                     ++length;
+        //                 }
+        //             }
+        //             return length;
+        //         };
+
+        //         if (e.shiftKey) {
+        //             var allQuestionAnswers = quizState.quizData.questionData.labels
+
+        //             answerID = $(this).attr("id")
+
+        //             console.log(answerID)
+
+        //             questionID = ""
+        //             for (i = 0; i < ObjectLength(allQuestionAnswers); i++) {
+        //                 if (allQuestionAnswers[i].hashedID == answerID) {
+        //                     questionID = allQuestionAnswers[i].ID
+        //                     break
+        //                 }
+        //             }
+
+        //             var draggable = $(`#${answerID}`).draggable(),
+        //                 droppable = $(`#${questionID}`).droppable(),
+
+        //                 droppableOffset = droppable.offset(),
+        //                 draggableOffset = draggable.offset(),
+        //                 dx = droppableOffset.left - draggableOffset.left,
+        //                 dy = droppableOffset.top - draggableOffset.top;
+                
+        //             draggable.simulate("drag", {
+        //                 dx: dx + 20,
+        //                 dy: dy + 20
+        //             });
+        //             $(`#matchupQuestions #${answerID}`).remove()
+        //             $(`#${answerID}`).appendTo($(`#${questionID}`))
+
+        //             setTimeout(function(){
+        //                 manageCheckButton();
+        //             }, 1000);
+        //         }
+
+        //         setTimeout(function(){
+        //             manageCheckButton();
+        //         }, 1000);
+
+        //     })
+        // }
     }
 })
 
